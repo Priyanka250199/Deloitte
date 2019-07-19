@@ -1,0 +1,305 @@
+Difference between subquery and joins :
+
+
+
+ create table Stu
+ (
+   Roll number(20),
+   Name varchar(20)
+ );
+
+create table Fees
+(
+ Roll number(20),
+ Amount number(10)
+);
+
+insert into Stu values(1,'Rakesh');
+insert into Stu values(2,'Sai');
+insert into Stu values(3,'Dan');
+
+insert into Fees values(1,9800);
+insert into Fees values(2,10800);
+insert into Fees values(1,1000);
+
+
+Subquery
+-----------------------
+A subquery is a SELECT statement that is nested within another SELECT statement.
+
+select Name from Student_G where Roll = ( select Roll from Fees)
+select Name from Student_G where Roll in ( select Roll from Fees)
+select Name from Student_G where exists ( select Roll from Fees)
+
+SELECT loanno,loan_status,loan_type
+FROM daily_pipeline_loan_fact
+WHERE SAL=(SELECT MAX(loan_amount)
+FROM daily_pipeline_loan_fact);
+
+EXISTS operator: 
+
+Exists returns a value TRUE if the subquery that follows it returns at least one row.
+
+Example:
+SELECT loanno, loan_amount
+FROM daily_pipeline_loan_fact
+WHERE EXISTS (SELECT COUNT(*)
+FROM daily_pipeline_loan_fact
+WHERE loan_status=‘FUNDED’
+HAVING COUNT(*) > 5)
+ORDER BY loanno;
+
+
+
+
+
+
+
+
+
+ANY operator: The ANY operator compares the main query with any of the values returned by the inner query.
+
+Example:
+
+SELECT loanno, loan_amount,loan_status
+FROM daily_pipeline_loan_fact
+WHERE loan_amount > ANY (SELECT loan_amount
+FROM daily_pipeline_loan_fact
+WHERE loan_status =‘FUNDED’);
+
+select Roll,Name from Stu_D where Roll > any ( select Roll from Fees_D)
+
+
+
+ALL operator: The ALL operator compares a value to every value return by the sub query.
+Example:
+SELECT loanno, loan_amount,loan_status
+FROM daily_pipeline_loan_fact
+WHERE loan_amount > ALL (SELECT loan_amount
+FROM daily_pipeline_loan_fact
+WHERE loan_status =‘FUNDED’);
+
+ select Roll,Name from Stu_D where Roll > all ( select  from Fees_D)
+
+
+Correlated Subquery
+
+Correlated sub queries are used for row by row processing. Each sub query executed once for every row of outer query.
+
+A correlated Oracle subquery is evaluated once FOR EACH ROW as opposed to a normal subquery which is evaluated only once for each table.
+
+You can reference the outer query inside the correlated subquery using an alias.
+
+
+
+Example: Find all the loans having loan amount more then the average loan amount in it’s product category.
+
+SELECT loanno,loan_amount,product_key
+FROM daily_pipeline_loan_fact d
+WHERE loan_amount >(SELECT avg(loan_amount)
+FROM daily_pipeline_loan_fact
+WHERE product_key=d.product_key)
+
+
+
+Correlated UPDATE: Use a correlated sub query to update rows in one table based on rows from another table.
+
+Increase the salary (whose salary is less than their department's average) a raise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UPDATE emp a 
+      set sal = (select avg(sal) 
+                from emp b 
+	        where 
+	        a.deptno = b.deptno)
+      where sal < 
+	   (select avg(sal) from emp c 
+	   where a.deptno = c.deptno);
+
+update students a
+	set a.marks = (select avg(marks) from students b where a.roll = b.roll)
+where marks < ( select avg(marks) from students c where a.roll = c.roll)
+
+
+
+create table students
+(
+	roll integer,
+	marks integer
+)
+
+insert into students values(1,90);
+insert into students values(2,99);
+insert into students values(1,22);
+insert into students values(1,2);
+
+** They will update based on group of roll (1)
+** 90+22+2/3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UPDATE daily_pipeline_loan_fact outerloan
+SET loan_status=(SELECT loan_status
+FROM loan_status_dim status
+WHERE outerloan.loan_key=
+status.loan_key)
+
+
+Correlated DELETE: Use a correlated sub query to delete rows in one table based on rows from another table.
+
+DELETE daily_pipeline_loan_fact outerloan
+SET loan_status=(SELECT loan_status
+FROM loan_status_dim status
+WHERE outerloan.loan_key=
+status.loan_key)
+
+Let's delete the highest earning employees in each department.
+
+
+delete from emp100 a where
+      a.sal = (select max(sal) from emp b 
+	  where a.deptno = b.deptno);
+
+
+create table emp100
+(
+	empId integer,
+	empName varchar(20),
+	sal integer,
+	deptno integer
+)
+
+
+insert into emp100 values(1,'Tufail',980000,1);
+insert into emp100 values(2,'Ahmed',80000,1);
+insert into emp100 values(3,'Khan',90000,2);
+insert into emp100 values(4,'Tarun',20000,2);
+insert into emp100 values(5,'Neha',950000,2);
+
+
+
+
+
+
+
+Hierarchical Subquery
+
+select lpad(' ',2*(level-1)) || to_char(child) child 
+  from test_connect_by 
+  start with parent is null
+  connect by prior child = parent;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------
+
+
+create table hier
+(
+    parent  varchar2(30),
+    child   varchar2(30)
+);
+
+insert into hier values(null,'Asia');
+insert into hier values(null,'Australia');
+insert into hier values(null,'Europe');
+insert into hier values(null,'North America');
+insert into hier values('Asia','China');
+insert into hier values('Asia','Japan');
+insert into hier values('Australia','New South Wales');
+insert into hier values('New South Wales','Sydney');
+insert into hier values('California','Redwood Shores');
+insert into hier values('Canada','Ontario');
+insert into hier values('China','Beijing');
+insert into hier values('England','London');
+insert into hier values('Europe','United Kingdom');
+insert into hier values('Japan','Osaka');
+insert into hier values('Japan','Tokyo');
+insert into hier values('North America','Canada');
+insert into hier values('North America','USA');
+insert into hier values('Ontario','Ottawa');
+insert into hier values('Ontario','Toronto');
+insert into hier values('USA','California');
+insert into hier values('United Kingdom','England'); 
+
+
+select level,lpad(' ',level*3)||child
+  from hier
+ start with parent is null
+ connect by prior child = parent;
+
+select level,sys_connect_by_path(child,'/') path
+  from hier
+ start with parent is null
+ connect by prior child = parent;
+
+select connect_by_root child,sys_connect_by_path(child,'/') path
+  from hier
+ start with parent is null
+connect by prior child = parent
+
+
+
+Difference between subquery and joins :
+
+1) Subqueries can be used to return either a scalar (single) value or a row set; whereas, joins are used to return rows.
+
+2) Joins are used in the FROM clause of the WHERE statement; however, you’ll find subqueries used in most clauses such as the: 
+
+SELECT List – here a subqueries used to return single values are used. 
+WHERE clause– depending on the conditional operator you’ll see single value or row based subqueries. 
+FROM clause– It is typical to see row based result subqueries used here. HAVING clause – In my experience scalar (single value) subqueries are used here. 
+
+
+3) Notice how the subqueries are queries unto themselves.  
+
+Contrast this with a join whose main purpose of a join is to combine rows from one or more tables based on a match condition. 

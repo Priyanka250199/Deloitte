@@ -1,0 +1,452 @@
+create table Suppliers
+(
+   supplier_id varchar(20),
+   supplier_name varchar(20)
+)
+/
+
+create table Orders
+(
+  order_id varchar(20),
+   supplier_id varchar(20),
+   order_date date
+)
+/
+
+insert into Suppliers values('10000','IBM')
+insert into Suppliers values('10001','Hewlett Packard')
+insert into Suppliers values('10002','Microsoft')
+insert into Suppliers values('10003','TCS')
+
+insert into Orders values('1','10000',to_date('3/3/09','mm/dd/yy'))
+insert into Orders values('2','10000',to_date('7/5/10','mm/dd/yy'))
+insert into Orders values('3','10001',to_date('12/8/10','mm/dd/yy'))
+
+---------------------------------
+Joins
+----------------
+
+
+Types of joins:
+----------------
+
+
+Equi Join
+----------------
+
+Is defined as a join in which more than one tables are joined together with the help of a common column that exists in both the tables
+
+EQUI Joins are also called simple joins and inner joins
+
+SELECT suppliers.supplier_id, suppliers.supplier_name, orders.order_date
+FROM suppliers, orders
+WHERE suppliers.supplier_id = orders.supplier_id
+
+
+SELECT s.supplier_id, s.supplier_name, o.order_date
+FROM suppliers s, orders o
+WHERE s.supplier_id = o.supplier_id
+
+
+
+SELECT loan_no,
+loan_amount,product_name
+FROM 
+daily_pipeline_loan_fact ,Product_dim
+WHERE Product_dim.product_id=daily_pipeline_loan_fact.product_id
+
+
+Removing Ambiguity
+--------------------------
+SELECT loan.product_id,loan_no,
+loan_amount,product_name
+FROM daily_pipeline_loan_fact loan,
+Product_dim product
+WHERE product.product_id=loan.product_id
+
+
+select a.Roll,Name,Amount from Student_G a ,Fees b where a.Roll = b.Roll;
+
+select Roll,Name,Amount from Student_G,Fees where Student_G.Roll = Fees.Roll
+
+select a.Roll,Name,Amount from Student_G a ,Fees b where Student_G.Roll = Fees.Roll
+
+
+
+
+
+
+
+NON Equi Join
+---------------
+A non equi join is a join condition containing something other than a equal operator .Others condition such as <=,>=, <>, BETWEEN can be used.
+
+SELECT loan.product_key,loan_no,
+loan_amount,product_name
+FROM daily_pipeline_loan_fact loan,
+Product_dim product
+WHERE product.product_key >=110
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Outer Join
+------------
+
+Another type of join is called an outer join. This type of join returns all rows from one table and only those rows from a secondary table where the joined fields are equal (join condition is met).
+
+select suppliers.supplier_id, suppliers.supplier_name, orders.order_date
+from suppliers, orders
+where suppliers.supplier_id = orders.supplier_id(+)
+
+select suppliers.supplier_id, suppliers.supplier_name, orders.order_date
+from suppliers, orders
+where suppliers.supplier_id(+) = orders.supplier_id
+
+
+An outer join extends the result of a simple join. An outer join returns all rows that satisfy the join condition and those rows from one table for which no rows from the other satisfy the join condition.
+
+The following are the types of outer join:
+Left outer, means all rows of the table left to the Join condition will appear
+Right outer, means all rows of the table right to the Join condition will appear
+Full outer, means missing rows from both the tables being joined
+
+
+select Name,Amount from Student_G left outer join Fees on Student_G.Roll = Fees.Roll
+select Name,Amount from Student_G right outer join Fees on Student_G.Roll = Fees.Roll
+select Name,Amount from Student_G full outer join Fees on Student_G.Roll = Fees.Roll
+
+--------------------------------------------------------
+
+
+select * from students;
+select * from fees;
+
+
+create table fees
+(
+    roll number,
+    amount number
+)
+
+select sname,amount from students,fees where students.roll = fees.roll;
+select sname,amount from students,fees where students.roll = fees.roll(+);
+select sname,amount from students,fees where students.roll(+) = fees.roll;
+select sname,amount from students FULL OUTER JOIN fees where students.roll = fees.roll;
+
+
+insert into fees values(10,12100);
+
+------------------------------
+Find out the product name of each loan with loan amount(Using Equijoin) .
+-------------------------------------------------------------------------
+SELECT loan_no,loan_amount,product_name
+FROM   daily_pipeline_loan_fact loan,
+       Product_dim           product
+WHERE  product.product_key= loan.product_key
+
+
+------------------
+Display  product name,loan number,loan amount of each loans having amount between 1000 and 2000(Non equijoin) .
+--------------------------------------------------------------------------------------------------------------
+
+SELECT   loan.product_name,loan_no,loan_amount,product_name
+FROM     daily_pipeline_loan_fact loan,
+         Product_dim product
+WHERE    loan.loan_amount between 1000 AND 2000
+
+
+
+
+
+
+
+
+( left outer join) .
+---------------------------------------------------------------------------------------------------------------------
+
+SELECT   loan.product_key,loan_no,loan_amount,product_name
+FROM       Product_dim product,
+           daily_pipeline_loan_fact loan
+WHERE  product.product_key=loan.product_key(+)
+
+ SELECT   loan.product_key,loan_no,loan_amount,product_name 
+  FROM   Product_dim product 
+  LEFT OUTER JOIN
+        daily_pipeline_loan_fact loan
+  ON product.product_key=loan.product_key
+
+
+
+
+
+
+
+
+
+
+
+
+(Right outer Join)
+----------------------------------------------------------------------------------------------------------------------
+
+SELECT   loan.product_key,loan_no,loan_amount,product_name
+FROM   Product_dim product,
+           daily_pipeline_loan_fact loan
+WHERE  product.product_key(+)=loan.product_key
+
+   SELECT   loan.product_key,loan_no,
+               loan_amount,product_name 
+  FROM   Product_dim product 
+  RIGHT OUTER JOIN
+             daily_pipeline_loan_fact loan
+  ON product.product_key=loan.product_key
+
+(Full Outer Join)
+----------------------------------------------------------------------------------------------------------------------
+SELECT   loan.product_id,loan_no,
+               loan_amount,product_name 
+  FROM   Product_dim product 
+  FULL OUTER JOIN
+             daily_pipeline_loan_fact loan
+  ON product.product_key=loan.product_key
+
+Find all the loans having loan amount more then the average loan amount in it?s product category . 
+-----------------------------------------------------------------------------------------------------------------------
+
+SELECT loanno,loan_amount,product_key
+FROM    daily_pipeline_loan_fact outer
+WHERE loan_amount >(SELECT avg(loan_amount)
+                                  FROM   daily_pipeline_loan_fact
+                                 WHERE product_key=outer.product_key)
+
+Find out the loan count and loan amount product wise that funded in 2008 .
+-------------------------------------------------------------
+
+SELECT COUNT(loan_no),SUM(loan_amount),product_name
+FROM   daily_pipeline_loan_fact loan
+       date_dim dt
+       product_dim product
+WHERE  dt.date_key=loan.date_key
+AND    calendar_year_nbr=2008
+AND    product.key=loan.product_key
+GROUP BY product_name
+
+
+--------------------------------------------
+
+select name,Amount from Student_G left Outer join Fees on Student_G.Roll = Fees.Roll;
+select name,Amount from Student_G right Outer join Fees on Student_G.Roll = Fees.Roll
+select name,Amount from Student_G full Outer join Fees on Student_G.Roll = Fees.Roll
+
+
+
+Self Join
+----------------
+
+When one row of one table is to be compared with another row of the same table, then self join is used. Logical tables need to be created from the same table temporarily. The table, on which the self join will be used, appears twice in the FROM clause, and is followed by table aliases that qualify column names in the join condition.
+
+Example:
+
+The following query uses a self join to return the name of each employee along with
+The name of the employee's manager:
+
+SELECT e1.ename||' works for '||e2.ename
+"Employees and their Managers"
+FROM emp e1, emp e2 WHERE e1.mgr = e2.empno;
+
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary,department_id ,manager_id)
+  2                values ( 1001, 'Lawson', 'lawson@g.com', '01-JAN-2002','MGR', 30000,1 ,1004);
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id ,manager_id)
+  2                values ( 1002, 'Wells', 'wells@g.com', '01-JAN-2002', 'DBA', 20000,2, 1005 );
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id ,manager_id)
+  2                 values( 1003, 'Bliss', 'bliss@g.com', '01-JAN-2002', 'PROG', 24000,3 ,1004);
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id, manager_id)
+  2                 values( 1004,  'Kyte', 'tkyte@a.com', SYSDATE-3650, 'MGR',25000 ,4, 1005);
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id, manager_id)
+  2                 values( 1005, 'Viper', 'sdillon@a .com', SYSDATE, 'PROG', 20000, 1, 1006);
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id,manager_id)
+  2                 values( 1006, 'Beck', 'clbeck@g.com', SYSDATE, 'PROG', 20000, 2, null);
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id, manager_id)
+  2                 values( 1007, 'Java', 'java01@g.com', SYSDATE, 'PROG', 20000, 3, 1006);
+
+1 row created.
+
+SQL>
+SQL> insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id, manager_id)
+  2                 values( 1008, 'Oracle', 'wvelasq@g.com', SYSDATE, 'DBA', 20000, 4, 1006);
+
+1 row created.
+
+
+CREATE TABLE employees
+    ( employee_id          number(10)      not null,
+      last_name            varchar2(50)      not null,
+      email                varchar2(30),
+      hire_date            date,
+      job_id               varchar2(30),
+      department_id        number(10),
+      salary               number(6),
+      manager_id           number(6)
+   );
+
+CREATE TABLE employees
+    ( employee_id          number(10)      not null,
+      last_name            varchar2(50)      not null,
+      email                varchar2(30),
+      hire_date            date,
+      job_id               varchar2(30),
+      department_id        number(10),
+      salary               number(6),
+      manager_id           number(6)
+   );
+
+
+insert into employees( employee_id, last_name, email, hire_date, job_id, salary, department_id,manager_id)
+                  values( 1006, 'Beck', 'clbeck@g.com', SYSDATE, 'PROG', 20000, 2, null);
+
+
+
+
+select * from employees;
+
+SELECT e1.last_name ||' works for '||e2.last_name 
+"Employees and their Managers"
+FROM employees e1, employees e2 WHERE e1. manager_id   = e2.employee_id;
+
+
+
+
+
+
+
+select e1.last_name ,e2.last_name from employees e1 left outer join employees e2
+            on e1.manager_id = e2.employee_id
+         order by e1.employee_id
+/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Natural Join
+-----------------
+
+The Natural Join clause is based on all columns in the two tables that have the same name. It select rows from the two tables that have equal values in all matched column. If the columns having the same names have different data types , then an error is returned .
+
+Example:
+
+SELECT loan.product_id,loan_no,
+loan_amount,product_name
+FROM Product_dim product,
+daily_pipeline_loan_fact loan
+WHERE NATURAL JOIN product_dim;
+
+
+
+
+
+CREATE TABLE Room (
+       RoomID   INT NOT NULL PRIMARY KEY,
+       Comments VARCHAR(50),
+       Capacity INT)
+/
+
+INSERT INTO Room (RoomID,Comments,Capacity) VALUES (1,'Main hall',500);
+INSERT INTO Room (RoomID,Comments,Capacity) VALUES (2,'Science Department',200);
+INSERT INTO Room (RoomID,Comments,Capacity) VALUES (3,'Science Room 1',100);
+INSERT INTO Room (RoomID,Comments,Capacity) VALUES (4,'Languages Block',300);
+
+
+ CREATE TABLE Class (
+        ClassID     INT NOT NULL PRIMARY KEY,
+        CourseID    INT NOT NULL,
+        InstructorID INT NOT NULL,
+        RoomID      INT NOT NULL,
+        Time        VARCHAR(50))
+
+ INSERT INTO Class (ClassID,CourseID,InstructorID,RoomID,Time) VALUES (2,2,1,5,'Mon 11:00-12:00, Thu 09:00-11:00');
+INSERT INTO Class (ClassID,CourseID,InstructorID,RoomID,Time) VALUES (3,3,2,3,'Mon 14:00-16:00');
+INSERT INTO Class (ClassID,CourseID,InstructorID,RoomID,Time) VALUES (4,4,3,2,'Tue 10:00-12:00, Thu 14:00-15:00');
+
+
+SELECT Class.ClassID,
+           Class.CourseID,
+           Class.Time,
+           Room.Comments AS RoomName
+    FROM Class NATURAL JOIN Room
+    ORDER BY ClassID
+
+
+
+
+
+
+
+
