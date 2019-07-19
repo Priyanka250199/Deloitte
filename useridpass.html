@@ -1,43 +1,58 @@
 <html>
 <head>
+<script>
+function validate(){
+	var usern = document.getElementById("username").value;
+	var password = document.getElementById("password").value;
+	var errUsername = document.getElementById("errUsername");
+	var errPassword = document.getElementById("errPassword");
+	var successMessage = document.getElementById("successMessage");
+	if(usern.length == 0)
+		{
+		errUsername.innerHTML="<font color=blue>Please enter name to proceed";
+		return false;
+		}
+	else if (password.length == 0)
+		{
+		errUsername.innerHTML="";
+		errPassword.innerHTML="<font color=blue>Please password to proceed";
+		return false;
+		}
+	else {
+		errPassword.innerHTML="";
+		successMessage.innerHTML= "<font color=blue>Welcome";
+	}
+	
+}
+</script>
+</head>
 <title>
 Hello Delloite
 </title>
 <body bgcolor="gray"text="black">
 <center>
 <b>
-<font face="comic sans ms"size="20"> Hello Delloite</b> Fill the Details
+<font face="comic sans ms"size="20"> Hello Deloit te</b> Fill the Details
 </font>
 </center>
+<embed src="">
+<audio src=""autoplay="autoplay"loop=""></audio>
 <hr color="red"/>
 <a href="new1.html">new1</a>
 My name
 
 <form>
 <table cellspacing="10" cellpadding="10" align="center">
-<tr><td>username</td><td> <input type="text"id="username"name="username">
-<br><tr><td>password</td><td> <input type="text"id="password"name="password">
-<br><tr><td>useraddress</td><td>
-<textarea rows="5" cols="20" id="userAddress"name="user Address">
-</textarea>
-<tr>
-<td>gender</td>
-<td>
-<input type="radio"id="male"name="gender"value="male">Male
-<input type="radio"id="female"name="gender"value="female">Female
-<input type="radio"id="others"name="gender"value="others">Others
-</td>
+<tr><td>username</td><td> <input type="text" id="username" name="username">
+<td><span id="errUsername"></span></td></tr>
+<br><tr><td>password</td><td> <input type="text" id="password" name="password"></td>
 
-
-
-
-
-
+<td><span id="errPassword"></span></td></tr>
 
 
 <tr><td> <input type="submit" value="submit"></td><td><input type="reset" value="clear"></td></tr>
 </table>
-
+<input type="button" value="Go" onClick="validate()">
 </form>
 
 

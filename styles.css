@@ -1,0 +1,22 @@
+h1.guest{
+ color: brown; 
+ text-transform:uppercase;
+ background-color: black;
+
+}
+h1.premium{
+ color: orange;
+ text-transform:lowercase;
+ background-color: purple;
+
+}
+body{background:yellow url('Taj Mahal.jpg') no-repeat right top;}
+
+table{
+ border: 1px solid black;
+ background-color:solid gray;
+ width:100%;
+ height:50%;
+ vertical=align:bottom;
+ padding:5px
+}
