@@ -1,6 +1,6 @@
 package day6;
 
-public class Cat extends Canine {
+public class Tiger extends Feline {
 	public void makeNoise()
 	{
 		

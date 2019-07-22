@@ -1,27 +1,16 @@
-package org.animals;
+package day6;
 
-public class Lion {
-
-	int color;
-	int weight;
-	int age;
-	
-	public void likeisVegetarian()
+public class Lion extends Feline {
+	public void makeNoise()
 	{
-		System.out.println("lion is not vegetarian");
-
+		System.out.println("lion make noise");
 	}
-	
-	public void canClimb()
-	{
-		System.out.println("lion can not climb");
-	
-	}
-	
-	public void getSound()
-	{
-		System.out.println("lion makes sound");
+    public void eat()
+    {
+    	System.out.println("lion eats");
+    }
+    
+    public static void main(String[] args) {
 		
 	}
-
 }

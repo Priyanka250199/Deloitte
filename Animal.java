@@ -1,15 +1,13 @@
-package demos;
+package day6;
 
-public class Animal {
-	  
-	public void talk()
-	{
-		System.out.println("animal makes sound xyz");
-	}
-	public void eat()
-	{
+abstract class Animal {
+	abstract void makeNoise();
+	abstract void eat();
+	abstract void roam();
+	public void sleep() {
 		
-		System.out.println("animal eats pqr");
+		
+		System.out.println("animal sleep");
 	}
 	
 
