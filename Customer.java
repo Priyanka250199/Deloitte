@@ -1,23 +1,49 @@
-package cust;
+package com.deloitte.app;
+
+import javax.naming.InvalidNameException;
+
+import MyAppExceptions.InvalidAddressException;
+import MyAppExceptions.InvalidIdExceptions;
+import MyAppExceptions.NegativeBillExceptions;
 
 public class Customer {
-	public Customer() 
-	{
-		
-	}
+	private int customerId;   
+	private String customerName;
+	private String customerAddress;
+	private int billAmount;
 	
-
-	int customerId;
-	String customerName;
-	String customerAddress;
-	int billAmount;
-	public Customer(int customerId, String customerName, String customerAddress, int billAmount) {
-		super();
+	public Customer( int customerId, String customerName, String customerAddress,int billAmount )
+			throws InvalidIdExceptions, InvalidNameException {
+		
+	
+	 if (customerId>0) {
 		this.customerId = customerId;
+	}
+	 else 
+		 throw new InvalidIdExceptions("customer id should be greater than zero") ;
+	if (customerName != null) {
 		this.customerName = customerName;
+	}
+	else
+		throw new InvalidNameException("customer name should be greater than zero");
+	
+	if (-----------) {
 		this.customerAddress = customerAddress;
+	}
+	else
+	{
+		throw new InvalidAddressException("address should come in five lines");
+	}
+	if (billAmount>0) {
 		this.billAmount = billAmount;
 	}
+	else
+	{
+		throw new NegativeBillExceptions("Bill can not be negative");
+	}
+	 
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -28,6 +54,7 @@ public class Customer {
 		result = prime * result + ((customerName == null) ? 0 : customerName.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -53,9 +80,49 @@ public class Customer {
 			return false;
 		return true;
 	}
+
+	public int getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(int customerId) throws InvalidIdExceptions {
+		 if (customerId>0) {
+				this.customerId = customerId;
+			}
+			 else 
+				 throw new InvalidIdExceptions("customer id should be greater than zero") ;
+
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getCustomerAddress() {
+		return customerAddress;
+	}
+
+	public void setCustomerAddress(String customerAddress) {
+		this.customerAddress = customerAddress;
+	}
+
+	public int getBillAmount() {
+		return billAmount;
+	}
+
+	public void setBillAmount(int billAmount) {
+		this.billAmount = billAmount;
+	}
+
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId + ", customerName=" + customerName + ", customerAddress="
+				+ customerAddress + ", billAmount=" + billAmount + "]";
+	}
 	
-	
-	
-	
-	
+
 }
